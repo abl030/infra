@@ -1,0 +1,42 @@
+#cloud-config
+#this file will create a vm in unraid, auto install it, create the user abl030, update the machine and install tailscale with ssh enabled. All other SSH will be disabled.
+#replace the auth keys as appropriate. Rembmering the password field is encrypted.
+autoinstall:
+  apt:
+    geoip: true
+    preserve_sources_list: false
+  identity:
+    hostname: genericvm
+    password: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    realname: abl030
+    username: abl030
+  keyboard:
+    layout: us
+  locale: en_US.UTF-8
+  network:
+    ethernets:
+      enp1s0:
+        dhcp4: true
+    version: 2
+  ssh:
+    allow-pw: false
+    install-server: true
+  storage:
+    layout:
+      name: direct
+  updates: security
+  version: 1
+  user-data:
+    runcmd:
+      - touch /home/abl030/test
+      - apt update
+      - apt upgrade -y
+      - apt autoremove -y
+      - curl -fsSL https://tailscale.com/install.sh | sh
+      #replace authkey with your tailscale authkey
+      - tailscale up --authkey=tskey-auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - tailscale set --ssh
+      - tailscale set --auto-update
+
+
+
