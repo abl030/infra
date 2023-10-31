@@ -28,6 +28,7 @@ autoinstall:
   version: 1
   user-data:
     runcmd:
+      #this line just tests the runcmd, delete it or least change the user folder to the appropriate username
       - touch /home/abl030/test
       - apt update
       - apt upgrade -y
