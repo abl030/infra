@@ -45,6 +45,10 @@ autoinstall:
       - systemctl restart unattended-upgrades.service
       #update timezone so logs make sense
       - timedatectl set-timezone Australia/Perth
+      #this should always be the last command
+      #prints out the local IP to make port-forwarding easy and no log in required.
+      - ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1
+
 
 
 
