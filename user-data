@@ -38,9 +38,8 @@ autoinstall:
       - tailscale up --authkey=tskey-auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       - tailscale set --ssh
       - tailscale set --auto-update
-      #edit our unattended-upgrades file to automatically update everything including dev releases, remove unused packages and also reboot when required.
+      #edit our unattended-upgrades file to automatically update everything, remove unused packages and also reboot when required.
       - sed -i '/"${distro_id}:${distro_codename}-updates"/s/^\/\/\s*//; /"${distro_id}:${distro_codename}-proposed"/s/^\/\/\s*//; /"${distro_id}:${distro_codename}-backports"/s/^\/\/\s*//' /etc/apt/apt.conf.d/50unattended-upgrades
-      - sed -i 's/Unattended-Upgrade::DevRelease "auto";/Unattended-Upgrade::DevRelease "true";/' /etc/apt/apt.conf.d/50unattended-upgrades
       - sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false";#Unattended-Upgrade::Remove-Unused-Dependencies "true";#' /etc/apt/apt.conf.d/50unattended-upgrades
       - sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false";#Unattended-Upgrade::Automatic-Reboot "true";#' /etc/apt/apt.conf.d/50unattended-upgrades
       - systemctl restart unattended-upgrades.service
