@@ -43,7 +43,7 @@ autoinstall:
       - sed -i 's/Unattended-Upgrade::DevRelease "auto";/Unattended-Upgrade::DevRelease "true";/' /etc/apt/apt.conf.d/50unattended-upgrades
       - sed -i 's#//Unattended-Upgrade::Remove-Unused-Dependencies "false";#Unattended-Upgrade::Remove-Unused-Dependencies "true";#' /etc/apt/apt.conf.d/50unattended-upgrades
       - sed -i 's#//Unattended-Upgrade::Automatic-Reboot "false";#Unattended-Upgrade::Automatic-Reboot "true";#' /etc/apt/apt.conf.d/50unattended-upgrades
-      - sudo systemctl restart unattended-upgrades.service
+      - systemctl restart unattended-upgrades.service
       
 
 
