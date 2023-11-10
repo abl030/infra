@@ -74,5 +74,9 @@ if [ "$userInput" = '1' ]; then
 else
     # The user did not press 1. Exit the script.
     echo "You did not press 1. Exiting the script."
+    rm -- "$0"
     exit 1
 fi
+
+# Delete the script in all cases.
+rm -- "$0"
