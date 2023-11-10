@@ -14,6 +14,7 @@ SITE_URL=blog.barrett-lennard.com
 git clone --recurse-submodules https://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@github.com/abl030/AndyBlog.git
 #chown -R abl030 ./AndyBlog 
 hugo -s ./AndyBlog
+sudo rm -rf /home/${SITE_USER}/public
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
 # Reload the nginx config
