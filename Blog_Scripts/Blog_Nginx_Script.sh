@@ -69,7 +69,7 @@ read -p "After forwarding port 80, press 1 to continue: " userInput
 
 if [ "$userInput" = '1' ]; then
     # Enable HTTPS
-    sudo certbot --nginx
+    sudo certbot --nginx --non-interactive --agree-tos --email abl030@gmail.com --expand
     sudo ufw allow 443/tcp
 else
     # The user did not press 1. Exit the script.
