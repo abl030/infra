@@ -20,6 +20,9 @@ git clone --recurse-submodules https://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@
 hugo -s ./AndyBlog
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
+#cleanup
+sudo rm -rf ./AndyBlog
+
 #add a user for our blog
 sudo adduser $SITE_USER --disabled-password --gecos ""
 
