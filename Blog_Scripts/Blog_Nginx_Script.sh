@@ -14,8 +14,8 @@ sudo apt update
 # Install prerequisites
 sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
 
+#need to intialise the gpg directory and keyring files, otherwise it errors out.
 gpg --list-keys
-
 
 # Set up the apt repository for nginx packages
 echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
