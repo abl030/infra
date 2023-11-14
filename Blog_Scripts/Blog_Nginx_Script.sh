@@ -22,7 +22,7 @@ echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 
 
 # Install nginx
 sudo apt update
-sudo apt install nginx -y
+sudo apt install nginx certbot python3-certbot-nginx -y
 
 
 #install GIT & Hugo for intial deployment
@@ -59,8 +59,7 @@ server {
     server_name ${SITE_URL} www.${SITE_URL};
 
     root        /home/${SITE_USER}/public;
-    charset     utf-8;
-
+    
     location / {
     }
 }
@@ -111,15 +110,20 @@ http {
     # Virtual Host Configs
     include /etc/nginx/conf.d/*.conf;
 
-    # Additional configurations can be added here
+    #Further modernisation as per Mozilla generator at
+    #https://ssl-config.mozilla.org/#server=nginx&version=1.17.7&config=modern&openssl=1.1.1k&guideline=5.7
+
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_tickets off;
+
+    # modern configuration
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
 }
 EOF
 
-
-
-
-# Reload the nginx config
-sudo nginx -t && systemctl reload nginx
 
 #Enable port 80 ufw
 sudo ufw enable
@@ -145,6 +149,9 @@ else
     rm -- "$0"
     exit 1
 fi
+
+# Reload the nginx config
+sudo nginx -t && systemctl reload nginx
 
 # Delete the script in all cases.
 rm -- "$0"
