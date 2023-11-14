@@ -2,9 +2,6 @@
 
 #remember to run the script as sudo. Dangerous? Yes! Easier? Definitely!
 
-#stop execution if command fails
-set -e
-
 #install nginx
 sudo apt update
 
@@ -38,6 +35,7 @@ SITE_URL=blog.barrett-lennard.com
 
 #clone the repo and deploy
 git clone --recurse-submodules https://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@github.com/abl030/AndyBlog.git
+
 #chown -R abl030 ./AndyBlog 
 hugo -s ./AndyBlog
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
@@ -54,7 +52,7 @@ sudo chown -R $SITE_USER /home/$SITE_USER/public
 sudo chgrp -R $SITE_USER /home/$SITE_USER/public
 
 ## make the default http nginx config to allow acme protocul
-sudo tee /etc/nginx/sites-available/$SITE_USER > /dev/null <<EOF
+sudo tee /etc/nginx/conf.d/$SITE_URL.conf > /dev/null <<EOF
 server {
     listen 80;
     listen [::]:80;
@@ -68,9 +66,57 @@ server {
 }
 EOF
 
+# Create the new nginx.conf file
+sudo tee /etc/nginx/nginx.conf > /dev/null <<EOF
+#Created as we need to combine the nginx.conf's from the deb package and the ubuntu package.
 
-# Enable the site config
-sudo ln -s /etc/nginx/sites-available/$SITE_USER /etc/nginx/sites-enabled/$SITE_USER
+# Set user and pid as per your requirement
+user www-data;
+pid /run/nginx.pid;
+
+# Automatically determine the number of worker processes
+worker_processes auto;
+
+# Events block configuration
+events {
+    worker_connections  1024;
+    # You might also consider enabling multi_accept if needed
+    # multi_accept on;
+}
+
+# HTTP block configuration
+http {
+    # Basic settings
+    sendfile on;
+    tcp_nopush on;
+
+    #basic server hardening taken from: https://help.dreamhost.com/hc/en-us/articles/222784068-The-most-important-steps-to-take-to-make-an-nginx-server-more-secure
+    server_tokens off;
+    proxy_hide_header X-Powered-By;
+    add_header X-Frame-Options SAMEORIGIN;
+
+    types_hash_max_size 2048;
+    keepalive_timeout  65;
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+     # Logging settings
+    access_log  /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # Gzip settings
+    gzip on;
+    # Additional Gzip configuration can be added here
+
+    # Virtual Host Configs
+    include /etc/nginx/conf.d/*.conf;
+
+    # Additional configurations can be added here
+}
+EOF
+
+
+
 
 # Reload the nginx config
 sudo nginx -t && systemctl reload nginx
