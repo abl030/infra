@@ -2,12 +2,34 @@
 
 #remember to run the script as sudo. Dangerous? Yes! Easier? Definitely!
 
+#stop execution if command fails
+set -e
+
 #install nginx
 sudo apt update
-sudo apt install nginx certbot python3-certbot-nginx -y
+
+#Originally just had the ubuntu package, but its waaaaay out of date. So using the NGINX package manager.
+#at time of writing ubuntu package was 1.18.0 and the nginx current was: 1.24.0
+
+# Install prerequisites
+sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
+
+gpg --list-keys
+
+
+# Set up the apt repository for nginx packages
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+
+# Set up repository pinning
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | sudo tee /etc/apt/preferences.d/99nginx
+
+# Install nginx
+sudo apt update
+sudo apt install nginx -y
+
 
 #install GIT & Hugo for intial deployment
-sudo apt install git
+sudo apt install git -y
 sudo snap install hugo
 
 #define our variables
