@@ -44,7 +44,6 @@ SITE_USER="www-data"
 #Download our NGINX Conf
 # GitHub API URL for the raw content of the file
 FILE_URL="https://api.github.com/repos/abl030/infra/contents/Blog_Deploy/nginx.conf"
-
 # Download the file using curl with the access token
 curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3.raw" -o nginx.conf $FILE_URL
 
