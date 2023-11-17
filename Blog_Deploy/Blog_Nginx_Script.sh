@@ -29,18 +29,24 @@ sudo apt install nginx certbot python3-certbot-nginx -y
 sudo apt install git -y
 sudo snap install hugo
 
-#!/bin/bash
-
 # Prompt user for SITE_URL
 read -p "Enter the site URL: " SITE_URL
 
 # Prompt user for GitHub access token
 read -p "Enter your GitHub access token: " GITHUB_TOKEN
 
-# Set the variables with user inputs
+#Prompt user for Email
+read -p "Enter your email address for CertBot: " EMAIL
+
+# Set the user variable
 SITE_USER="www-data"
-# Use SITE_URL and GITHUB_TOKEN from user input
-SITE_URL="$SITE_URL"
+
+#Download our NGINX Conf
+# GitHub API URL for the raw content of the file
+FILE_URL="https://api.github.com/repos/abl030/infra/contents/Blog_Deploy/nginx.conf"
+
+# Download the file using curl with the access token
+curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3.raw" -o nginx.conf $FILE_URL
 
 # Clone the repo and deploy
 git clone --recurse-submodules "https://${GITHUB_TOKEN}@github.com/abl030/AndyBlog.git"
@@ -74,65 +80,8 @@ server {
 }
 EOF
 
-# Create the new nginx.conf file
-sudo tee /etc/nginx/nginx.conf > /dev/null <<EOF
-#Created as we need to combine the nginx.conf's from the deb package and the ubuntu package.
-
-# Set user and pid as per your requirement
-user www-data;
-pid /run/nginx.pid;
-
-# Automatically determine the number of worker processes
-worker_processes auto;
-
-# Events block configuration
-events {
-    worker_connections  1024;
-    # You might also consider enabling multi_accept if needed
-    # multi_accept on;
-}
-
-# HTTP block configuration
-http {
-    # Basic settings
-    sendfile on;
-    tcp_nopush on;
-
-    #basic server hardening taken from: https://help.dreamhost.com/hc/en-us/articles/222784068-The-most-important-steps-to-take-to-make-an-nginx-server-more-secure
-    server_tokens off;
-    proxy_hide_header X-Powered-By;
-    add_header X-Frame-Options SAMEORIGIN;
-
-    types_hash_max_size 2048;
-    keepalive_timeout  65;
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-
-     # Logging settings
-    access_log  /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
-
-    # Gzip settings
-    gzip on;
-    # Additional Gzip configuration can be added here
-
-    # Virtual Host Configs
-    include /etc/nginx/conf.d/*.conf;
-
-    #Further modernisation as per Mozilla generator at
-    #https://ssl-config.mozilla.org/#server=nginx&version=1.17.7&config=modern&openssl=1.1.1k&guideline=5.7
-
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
-    ssl_session_tickets off;
-
-    # modern configuration
-    ssl_protocols TLSv1.3;
-    ssl_prefer_server_ciphers off;
-
-}
-EOF
-
+#Copy in our new NGINX Conf that we downloaded from Infra
+sudo cp nginx.conf /etc/nginx/nginx.conf
 
 #Enable port 80 ufw
 sudo ufw enable
@@ -150,7 +99,7 @@ read -p "After forwarding port 80, press 1 to continue: " userInput
 
 if [ "$userInput" = '1' ]; then
     # Enable HTTPS
-    sudo certbot --nginx --staple-ocsp --non-interactive --agree-tos --email abl030@gmail.com --expand -d blog.barrett-lennard.com,www.blog.barrett-lennard.com
+    sudo certbot --nginx --staple-ocsp --non-interactive --agree-tos --email $EMAIL --expand -d "${SITE_URL},www.${SITE_URL}"
     sudo ufw allow 443/tcp
 else
     # The user did not press 1. Exit the script.
