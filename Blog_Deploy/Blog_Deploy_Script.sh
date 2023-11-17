@@ -8,12 +8,17 @@ sudo snap install hugo
 
 #define our variables
 SITE_USER=www-data
-SITE_URL=blog.barrett-lennard.com
 
-#clone the repo and deploy
-git clone --recurse-submodules https://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@github.com/abl030/AndyBlog.git
-#chown -R abl030 ./AndyBlog 
+# Prompt user for GitHub access token
+read -p "Enter your GitHub access token: " GITHUB_TOKEN
+
+# Clone the repo and deploy
+git clone --recurse-submodules "https://${GITHUB_TOKEN}@github.com/abl030/AndyBlog.git"
+
+#Hugo Create
 hugo -s ./AndyBlog
+
+#Remove old /public and move it then new
 sudo rm -rf /home/${SITE_USER}/public
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
@@ -23,5 +28,6 @@ sudo nginx -t && systemctl reload nginx
 #cleanup
 sudo rm -rf ./AndyBlog
 
+#As we've moved out the access token, we no loger need to delete the script.
 # Delete the script in all cases.
-rm -- "$0"
+#rm -- "$0"

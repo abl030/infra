@@ -51,7 +51,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.
 # Clone the repo and deploy
 git clone --recurse-submodules "https://${GITHUB_TOKEN}@github.com/abl030/AndyBlog.git"
 
-#chown -R abl030 ./AndyBlog 
+#Hugo Create and move into the prod public directory
 hugo -s ./AndyBlog
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
