@@ -29,12 +29,21 @@ sudo apt install nginx certbot python3-certbot-nginx -y
 sudo apt install git -y
 sudo snap install hugo
 
-#define our variables
-SITE_USER=www-data
-SITE_URL=blog.barrett-lennard.com
+#!/bin/bash
 
-#clone the repo and deploy
-git clone --recurse-submodules https://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@github.com/abl030/AndyBlog.git
+# Prompt user for SITE_URL
+read -p "Enter the site URL: " SITE_URL
+
+# Prompt user for GitHub access token
+read -p "Enter your GitHub access token: " GITHUB_TOKEN
+
+# Set the variables with user inputs
+SITE_USER="www-data"
+# Use SITE_URL and GITHUB_TOKEN from user input
+SITE_URL="$SITE_URL"
+
+# Clone the repo and deploy
+git clone --recurse-submodules "https://${GITHUB_TOKEN}@github.com/abl030/AndyBlog.git"
 
 #chown -R abl030 ./AndyBlog 
 hugo -s ./AndyBlog
