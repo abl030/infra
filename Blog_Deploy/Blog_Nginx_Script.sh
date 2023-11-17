@@ -2,31 +2,33 @@
 
 #remember to run the script as sudo. Dangerous? Yes! Easier? Definitely!
 
-#install nginx
+## Originally used the Ubuntu PPA but it's out of date.
+## as of writing its at 1.18 and the nginx repo is 1.24.
+## installing the NGINX repo caused issues in testing, hence the code became complicated.
+
+sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+    | sudo tee /etc/apt/sources.list.d/nginx.list
+
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+    | sudo tee /etc/apt/preferences.d/99nginx
+
 sudo apt update
+sudo apt install nginx
 
-#Originally just had the ubuntu package, but its waaaaay out of date. So using the NGINX package manager.
-#at time of writing ubuntu package was 1.18.0 and the nginx current was: 1.24.0
+# Start Nginx service
+sudo systemctl start nginx
 
-# Install prerequisites
-sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
-
-#need to intialise the gpg directory and keyring files, otherwise it errors out.
-gpg --list-keys
-
-# Set up the apt repository for nginx packages
-echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
-
-# Set up repository pinning
-echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | sudo tee /etc/apt/preferences.d/99nginx
-
-# Install nginx
-sudo apt update
-sudo apt install nginx certbot python3-certbot-nginx -y
+#install certbot
+sudo apt install certbot python3-certbot-nginx git -y
 
 
-#install GIT & Hugo for intial deployment
-sudo apt install git -y
+#install Hugo for intial deployment
 sudo snap install hugo
 
 # Prompt user for SITE_URL
