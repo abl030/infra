@@ -70,7 +70,7 @@ sudo useradd -m -d /home/nginx -g nginx -s /bin/bash nginx
 
 ## copy our two nginx conf files
 sudo cp ./infra/Blog_Deploy/nginx.conf /etc/nginx/nginx.conf
-sudo cp ./infra/Blog_Deploy/blog.barrett-lennard.cong /etc/nginx/conf.d/blog.barrett-lennard.conf
+sudo cp ./infra/Blog_Deploy/blog.barrett-lennard.conf /etc/nginx/conf.d/blog.barrett-lennard.conf
 sudo sed -i "s/site_prefix/$SITE_PREFIX/g; s/site_domain/$SITE_DOMAIN/g" /etc/nginx/conf.d/blog.barrett-lennard.conf
 
 
