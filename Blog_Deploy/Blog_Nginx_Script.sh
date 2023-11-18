@@ -59,6 +59,7 @@ git clone --recurse-submodules "https://${GITHUB_TOKEN}@github.com/abl030/AndyBl
 
 #add a user for our blog
 sudo adduser $SITE_USER --disabled-password --gecos ""
+sudo mkdir /home/$SITE_USER
 
 #make a public directory for the above user
 sudo mkdir /home/$SITE_USER/public
@@ -71,8 +72,6 @@ sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
 #cleanup
 #sudo rm -rf ./AndyBlog
-
-
 
 ## make the default http nginx config to allow acme protocul
 sudo tee /etc/nginx/conf.d/$SITE_DOMAIN.conf > /dev/null <<EOF
@@ -87,9 +86,6 @@ server {
     }
 }
 EOF
-
-#copy over our conf file to let nginx run as non-root
-sudo cp ./infra/Blog_Deploy/nginx.conf /etc/nginx/nginx.conf
 
 #Enable port 80 ufw
 sudo ufw enable
@@ -121,6 +117,9 @@ else
     rm -- "$0"
     exit 1
 fi
+
+#copy over our conf file to let nginx run as non-root
+sudo cp ./infra/Blog_Deploy/nginx.conf /etc/nginx/nginx.conf
 
 ## copy our nginx service file
 sudo cp ./infra/Blog_Deploy/nginx.service /usr/lib/systemd/system/nginx.service
