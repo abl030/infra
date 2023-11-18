@@ -10,6 +10,7 @@ set -x
 
 #add our nginx user for the service
 #has to be done before we isntall nginx, otherwise it just doesn't add the /home file.
+sudo addgroup nginx
 sudo useradd -m -d /home/nginx -g nginx -s /bin/bash nginx
 
 sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
@@ -38,6 +39,8 @@ read -p "Enter the site prefix: " SITE_PREFIX
 
 # Prompt the user for the SITE_DOMAIN
 read -p "Enter the site domain: " SITE_DOMAIN
+
+SITE_URL="$SITE_PREFIX.$SITE_DOMAIN"
 
 #Prompt user for Email
 read -p "Enter your email address for CertBot: " EMAIL
@@ -123,12 +126,11 @@ else
     exit 1
 fi
 
-## copy our two nginx conf files
-sudo cp ./infra/Blog_Deploy/nginx.conf /etc/nginx/nginx.conf
+## copy our nginx site conf files and replace variables
 sudo cp ./infra/Blog_Deploy/blog.barrett-lennard.conf /etc/nginx/conf.d/blog.barrett-lennard.conf
 sudo sed -i "s/site_prefix/$SITE_PREFIX/g; s/site_domain/$SITE_DOMAIN/g" /etc/nginx/conf.d/blog.barrett-lennard.conf
 
-## copy our certbot domain hook script
+## copy our certbot domain hook script and replace variables
 sudo cp ./infra/Blog_Deploy/deploy_certs.sh /etc/letsencrypt/renewal-hooks/deploy/deploy_certs.sh
 sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/deploy_certs.sh
 sudo sed -i "s/site_prefix/$SITE_PREFIX/g; s/site_domain/$SITE_DOMAIN/g" /etc/letsencrypt/renewal-hooks/deploy/deploy_certs.sh
