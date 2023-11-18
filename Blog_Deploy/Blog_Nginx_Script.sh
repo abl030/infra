@@ -72,11 +72,7 @@ sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 #cleanup
 #sudo rm -rf ./AndyBlog
 
-## copy our nginx service file
-sudo cp ./infra/Blog_Deploy/nginx.service /usr/lib/systemd/system/nginx.service
 
-##reload systemctl daemon
-sudo systemctl daemon-reload
 
 ## make the default http nginx config to allow acme protocul
 sudo tee /etc/nginx/conf.d/$SITE_DOMAIN.conf > /dev/null <<EOF
@@ -126,9 +122,15 @@ else
     exit 1
 fi
 
+## copy our nginx service file
+sudo cp ./infra/Blog_Deploy/nginx.service /usr/lib/systemd/system/nginx.service
+
+##reload systemctl daemon
+sudo systemctl daemon-reload
+
 ## copy our nginx site conf files and replace variables
-sudo cp ./infra/Blog_Deploy/blog.barrett-lennard.conf /etc/nginx/conf.d/blog.barrett-lennard.conf
-sudo sed -i "s/site_prefix/$SITE_PREFIX/g; s/site_domain/$SITE_DOMAIN/g" /etc/nginx/conf.d/blog.barrett-lennard.conf
+sudo cp ./infra/Blog_Deploy/blog.barrett-lennard.conf /etc/nginx/conf.d/$SITE_DOMAIN.conf
+sudo sed -i "s/site_prefix/$SITE_PREFIX/g; s/site_domain/$SITE_DOMAIN/g" /etc/nginx/conf.d/$SITE_DOMAIN.conf
 
 ## copy our certbot domain hook script and replace variables
 sudo cp ./infra/Blog_Deploy/deploy_certs.sh /etc/letsencrypt/renewal-hooks/deploy/deploy_certs.sh
@@ -142,10 +144,13 @@ youruser="nginx"
 yourgroup="nginx"
 pathtoletsencryptcerts="/etc/letsencrypt/live/$domain/"
 
-cp "$pathtoletsencryptcerts/fullchain.pem" "$pathtoyourcertsdir/server_cert.pem"
-cp "$pathtoletsencryptcerts/privkey.pem" "$pathtoyourcertsdir/server_key.pem"
-chown $youruser:$yourgroup "$pathtoyourcertsdir/server_cert.pem"
-chown $youruser:$yourgroup "$pathtoyourcertsdir/server_key.pem"
+sudo cp "$pathtoletsencryptcerts/fullchain.pem" "$pathtoyourcertsdir/fullchain.pem"
+sudo cp "$pathtoletsencryptcerts/privkey.pem" "$pathtoyourcertsdir/privkey.pem"
+sudo cp "$pathtoletsencryptcerts/chain.pem" "$pathtoyourcertsdir/chain.pem"
+sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/fullchain.pem"
+sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/privkey.pem"
+sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/chain.pem"
+
 
 # Reload the nginx config
 sudo nginx -t && systemctl reload nginx
