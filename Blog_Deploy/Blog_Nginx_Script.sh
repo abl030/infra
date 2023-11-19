@@ -14,6 +14,9 @@ sudo hostnamectl set-hostname "$new_hostname"
 # Optional: Display the new hostname
 echo "Hostname has been set to: $new_hostname"
 
+# Note probably good to reboot here and continue the script after that.
+# This will update the hostname in Tailscale and make things easier.
+
 ## Originally used the Ubuntu PPA but it's out of date.
 ## as of writing its at 1.18 and the nginx repo is 1.24.
 ## installing the NGINX repo caused issues in testing, hence the code became complicated.
