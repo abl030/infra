@@ -6,8 +6,6 @@
 ## as of writing its at 1.18 and the nginx repo is 1.24.
 ## installing the NGINX repo caused issues in testing, hence the code became complicated.
 
-set -x
-
 #add our nginx user for the service
 #has to be done before we isntall nginx, otherwise it just doesn't add the /home file.
 sudo addgroup nginx
@@ -71,7 +69,7 @@ hugo -s ./AndyBlog
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
 #cleanup
-#sudo rm -rf ./AndyBlog
+sudo rm -rf ./AndyBlog
 
 ## make the default http nginx config to allow acme protocul
 sudo tee /etc/nginx/conf.d/$SITE_DOMAIN.conf > /dev/null <<EOF
@@ -156,8 +154,8 @@ sudo systemctl stop nginx.service
 # Reload the nginx config
 sudo systemctl restart nginx
 
-#delete infra
-#sudo rm -rf ./infra/
+# delete infra
+sudo rm -rf ./infra/
 
 # Delete the script in all cases.
 rm -- "$0"
