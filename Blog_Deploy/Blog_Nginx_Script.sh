@@ -2,6 +2,18 @@
 
 #remember to run the script as sudo. Dangerous? Yes! Easier? Definitely!
 
+#Change the hostname just to clean things up a bit
+
+# Ask the user for the new hostname
+echo "Enter the new hostname:"
+read new_hostname
+
+# Change the hostname using hostnamectl command
+sudo hostnamectl set-hostname "$new_hostname"
+
+# Optional: Display the new hostname
+echo "Hostname has been set to: $new_hostname"
+
 ## Originally used the Ubuntu PPA but it's out of date.
 ## as of writing its at 1.18 and the nginx repo is 1.24.
 ## installing the NGINX repo caused issues in testing, hence the code became complicated.
