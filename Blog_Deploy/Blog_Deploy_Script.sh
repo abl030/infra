@@ -22,11 +22,17 @@ hugo -s ./AndyBlog
 sudo rm -rf /home/${SITE_USER}/public
 sudo cp -r ./AndyBlog/public /home/${SITE_USER}/
 
+sudo chown -R nginx:nginx /home/${SITE_USER}/
+
 # Reload the nginx config
 sudo nginx -t && systemctl reload nginx
 
 #cleanup
 sudo rm -rf ./AndyBlog
+
+# Server needs to be rebooted otherwise we get 403's and 404's.
+# I'm unsure why, one day I'll figure it out but this works.
+sudo reboot 
 
 #As we've moved out the access token, we no loger need to delete the script.
 # Delete the script in all cases.
