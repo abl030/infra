@@ -6,9 +6,12 @@ youruser="nginx"
 yourgroup="nginx"
 
 if [ "$domain" = "$basedomain" ];then
-    cp "$RENEWED_LINEAGE/fullchain.pem" "$pathtoyourcertsdir/server_cert.pem"
-    cp "$RENEWED_LINEAGE/privkey.pem" "$pathtoyourcertsdir/server_key.pem"
-    chown $youruser:$yourgroup "$pathtoyourcertsdir/server_cert.pem"
-    chown $youruser:$yourgroup "$pathtoyourcertsdir/server_key.pem"
+    cp "$RENEWED_LINEAGE/fullchain.pem" "$pathtoyourcertsdir/fullchain.pem"
+    cp "$RENEWED_LINEAGE/privkey.pem" "$pathtoyourcertsdir/privkey.pem"
+    cp "$RENEWED_LINEAGE/chain.pem" "$pathtoyourcertsdir/chain.pem"
+    chown $youruser:$yourgroup "$pathtoyourcertsdir/fullchain.pem"
+    chown $youruser:$yourgroup "$pathtoyourcertsdir/privkey.pem"
+    chown $youruser:$yourgroup "$pathtoyourcertsdir/chain.pem"
     sudo nginx -t && systemctl reload nginx
 fi
+

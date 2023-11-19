@@ -150,9 +150,11 @@ sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/fullchain.pem"
 sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/privkey.pem"
 sudo chown $youruser:$yourgroup "$pathtoyourcertsdir/chain.pem"
 
+#this one command took like an hour to debug. You can't relaunch from root nginx to non-root. Have to stop it first.
+sudo systemctl stop nginx.service
 
 # Reload the nginx config
-sudo nginx -t && systemctl reload nginx
+sudo systemctl restart nginx
 
 #delete infra
 #sudo rm -rf ./infra/
