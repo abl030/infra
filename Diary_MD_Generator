@@ -1,9 +1,16 @@
 #!/bin/bash
 
-## Hacky script to touch all MD files for every day of the year. It just got annoying doing this in Zettlr
-
 # Array of month names
 months=(January February March April May June July August September October November December)
+
+# Ask user for the year
+read -p "Enter the year for file generation: " input_year
+
+# Check if the input is a valid year
+if ! [[ "$input_year" =~ ^[0-9]{4}$ ]]; then
+  echo "Invalid input year. Please enter a valid 4-digit year."
+  exit 1
+fi
 
 # Create directories for each month with the desired format
 for ((month=1; month<=12; month++)); do
@@ -19,8 +26,7 @@ for ((month=1; month<=12; month++)); do
     4|6|9|11) days_in_month=30 ;;
     2) 
       # Leap year check for February
-      current_year=$(date +'%Y')
-      if (( $current_year % 4 == 0 && ($current_year % 100 != 0 || $current_year % 400 == 0) )); then
+      if (( ($input_year % 4 == 0 && $input_year % 100 != 0) || $input_year % 400 == 0 )); then
         days_in_month=29  # Leap year: February has 29 days
       else
         days_in_month=28  # Non-leap year: February has 28 days
@@ -32,15 +38,16 @@ for ((month=1; month<=12; month++)); do
   month_name="${months[$((month - 1))]}"
   month_padded=$(printf "%02d" $month)
 
-  for ((day=1; day<=$days_in_month; day++)); do
-    day_padded=$(printf "%02d" $day)
-    year=$(date +'%y')
+for ((day=1; day<=$days_in_month; day++)); do
+  day_padded=$(printf "%02d" $day)
 
-    filename="./${month_padded} - ${month_name}/${day_padded}${month_padded}${year}.md"  # Correct file naming format
+  # Extract the last two digits of the year without padding
+  year="${input_year: -2}"  # Use string slicing for efficient extraction
 
-    # Create blank Markdown files with no content
-    touch "$filename"
-  done
+  filename="./${month_padded} - ${month_name}/${day_padded}${month_padded}${year}.md"
+
+  touch "$filename"
+done
 done
 
-echo "Blank Markdown files generated for the whole year."
+echo "Blank Markdown files generated for the year $input_year."
