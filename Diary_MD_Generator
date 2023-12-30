@@ -1,0 +1,46 @@
+#!/bin/bash
+
+## Hacky script to touch all MD files for every day of the year. It just got annoying doing this in Zettlr
+
+# Array of month names
+months=(January February March April May June July August September October November December)
+
+# Create directories for each month with the desired format
+for ((month=1; month<=12; month++)); do
+  month_name="${months[$((month - 1))]}"
+  month_padded=$(printf "%02d" $month)
+  mkdir -p "./${month_padded} - ${month_name}"  # Create directories in the current working directory
+done
+
+# Generate blank markdown files for each day in each month
+for ((month=1; month<=12; month++)); do
+  case $month in
+    1|3|5|7|8|10|12) days_in_month=31 ;;
+    4|6|9|11) days_in_month=30 ;;
+    2) 
+      # Leap year check for February
+      current_year=$(date +'%Y')
+      if (( $current_year % 4 == 0 && ($current_year % 100 != 0 || $current_year % 400 == 0) )); then
+        days_in_month=29  # Leap year: February has 29 days
+      else
+        days_in_month=28  # Non-leap year: February has 28 days
+      fi
+      ;;
+    *) echo "Invalid month" ;;
+  esac
+
+  month_name="${months[$((month - 1))]}"
+  month_padded=$(printf "%02d" $month)
+
+  for ((day=1; day<=$days_in_month; day++)); do
+    day_padded=$(printf "%02d" $day)
+    year=$(date +'%y')
+
+    filename="./${month_padded} - ${month_name}/${day_padded}${month_padded}${year}.md"  # Correct file naming format
+
+    # Create blank Markdown files with no content
+    touch "$filename"
+  done
+done
+
+echo "Blank Markdown files generated for the whole year."
